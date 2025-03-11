@@ -7,8 +7,7 @@
 {% endblock title%}
 
 {% block style %}
-    <!-- Link to the external CSS file -->
-    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock style %}
 
 {% block content %}
@@ -35,6 +34,7 @@
     </form>
     <div class="signup-link">
         <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+        <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset your password</a></p>
     </div>
 </div>
 {% endblock content %}
