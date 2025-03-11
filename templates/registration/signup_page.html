@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title %} sign up page{% endblock title %}
+
+
+{% block style %}
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock style %}
+
+
+{% block content %}
+    <div class="signup-container">
+        <h1>Sign Up</h1>
+        <!-- Display form errors at the top -->
+        {% if form.errors %}
+            <ul class="errorlist">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Sign-up form -->
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Username field -->
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+
+            <!-- Email field -->
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+
+            <!-- Gender field -->
+            <label for="id_gender">Gender:</label>
+            {{ form.gender }}
+
+            <!-- Age field -->
+            <label for="id_age">Age:</label>
+            {{ form.age }}
+
+            <!-- Password fields (automatically included by UserCreationForm) -->
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+
+            <label for="id_password2">Confirm Password:</label>
+            {{ form.password2 }}
+
+            <!-- Submit button -->
+            <button type="submit">Sign Up</button>
+        </form>
+        <div class="login-link">
+            <p><a href="{% url 'login' %}">Log In</a>
+        </div>
+    </div>
+{% endblock content %}

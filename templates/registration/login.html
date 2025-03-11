@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+{% load static %}
+
+
+{% block title%}
+    Login Page
+{% endblock title%}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock style %}
+
+{% block content %}
+<div class="login-card">
+    <h1>Login</h1>
+    <!-- Display error messages -->
+    {% if form.errors %}
+        <div class="error-message">
+            Invalid username or password. Please try again.
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <div class="signup-link">
+        <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+        <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset your password</a></p>
+    </div>
+</div>
+{% endblock content %}
