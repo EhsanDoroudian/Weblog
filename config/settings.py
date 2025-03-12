@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # local apps
-    'accounts.apps.AccountsConfig'
+    'accounts.apps.AccountsConfig',
+    'blogs.apps.BlogsConfig',
 ]
 
 MIDDLEWARE = [

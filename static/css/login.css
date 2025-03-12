@@ -7,7 +7,7 @@
 
 /* Full-page light blue background and centering */
 body {
-    background-color:blue; /* Light blue color */
+    background-color: #e6f0ff; /* Light blue color */
     height: 100vh; /* Full viewport height */
     display: flex;
     align-items: center; /* Vertical centering */
