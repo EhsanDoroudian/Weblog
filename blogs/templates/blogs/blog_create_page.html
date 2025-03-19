@@ -1,0 +1,103 @@
+{% extends "_base.html" %}
+
+{% load static %}
+
+{% block title %}Blog Create{% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/blog_create.css' %}">
+{% endblock style %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Blog Post Form -->
+        <div class="col-lg-8">
+            <div class="card shadow my-3 p-5">
+                <h3>Add new Post:</h3>
+                <form method="POST" id="post-form">
+                    {% csrf_token %}  <!-- CSRF token for security -->
+
+                    <!-- Title Field -->
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Title</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="{{ form.title.id_for_label }}"
+                            name="{{ form.title.html_name }}"
+                            value="{{ form.title.value|default_if_none:'' }}"
+                            placeholder="Enter blog title"
+                        >
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Body Field -->
+                    <div class="form-group">
+                        <label for="{{ form.body.id_for_label }}">Body</label>
+                        <textarea
+                            class="form-control"
+                            id="{{ form.body.id_for_label }}"
+                            name="{{ form.body.html_name }}"
+                            rows="5"
+                            placeholder="Write your blog post here"
+                        >{{ form.body.value|default_if_none:'' }}</textarea>
+                        {% if form.body.errors %}
+                            <div class="text-danger">
+                                {% for error in form.body.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Status Field -->
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">Status</label>
+                        <select
+                            class="form-control"
+                            id="{{ form.status.id_for_label }}"
+                            name="{{ form.status.html_name }}"
+                        >
+                            {% for value, label in form.status.field.choices %}
+                                <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.status.errors %}
+                            <div class="text-danger">
+                                {% for error in form.status.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card my-4 shadow-sm">
+                <h5 class="card-header">About</h5>
+                <div class="card-body">
+                    <p class="card-text">We love Python and Django. This blog is a place where we share our knowledge and experiences with the community.</p>
+                    <a href="#" class="btn btn-danger">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
