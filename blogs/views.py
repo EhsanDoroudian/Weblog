@@ -29,3 +29,19 @@ def blog_create_view(request):
         form = BlogForm()
     
     return render(request, 'blogs/blog_create_page.html', context={'form': form})
+
+
+def blog_update_view(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    if request.method == 'POST':
+        form = BlogForm(data=None or request.POST, instance=blog)
+        if form.is_valid():
+            form.save()
+
+        return redirect(Blog.get_absolute_url(blog))
+    
+    else:
+        form = BlogForm(instance=blog)
+
+    return render(request, 'blogs/blog_update_page.html', context={'form': form, 'blog': blog})
+
