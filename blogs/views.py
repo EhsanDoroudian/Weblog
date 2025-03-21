@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Blog
 from .forms import BlogForm
+from .decorators import user_is_authorized
 
 def blog_list_view(request):
     blogs = Blog.objects.filter(status='pub')
@@ -31,8 +32,8 @@ def blog_create_view(request):
     return render(request, 'blogs/blog_create_page.html', context={'form': form})
 
 
-@user_passes_test(lambda user: user.is_staff)  
 @login_required
+@user_is_authorized
 def blog_update_view(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     if request.method == 'POST':
@@ -48,11 +49,13 @@ def blog_update_view(request, pk):
     return render(request, 'blogs/blog_update_page.html', context={'form': form, 'blog': blog})
 
 
-@user_passes_test(lambda user: user.is_staff)  
 @login_required
+@user_is_authorized
 def blog_delete_view(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
+    
     if request.method == 'POST':
         blog.delete()
         return redirect('blog_list')
+    
     return render(request, 'blogs/blog_delete_page.html', context={'blog': blog})
