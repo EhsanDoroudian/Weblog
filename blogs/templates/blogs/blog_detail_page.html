@@ -21,7 +21,7 @@
                 <p class="mt-2" id="blog-description">{{blog.body}}</p>
                 <div>
                 <a href="{% url "blog_update" blog.id%}" type="submit" class="btn btn-info">Edit</a>
-                <a href="{% url "blog_update" blog.id%}" type="submit" class="btn btn-warning">Delete</a>
+                <a href="{% url "blog_delete" blog.id%}" type="submit" class="btn btn-warning">Delete</a>
                 </div>
             </div>
             <!-- Comments Section -->
