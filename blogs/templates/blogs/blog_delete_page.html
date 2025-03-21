@@ -1,0 +1,27 @@
+{% extends "_base.html" %}
+
+{% load static %}
+
+{% block title %}Delete Blog ({{ blog.id }}){% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/blog_delete.css' %}">
+{% endblock style %}
+
+{% block content %}
+<div class="delete-blog-container">
+    <h1>Delete Blog Post</h1>
+    <p>Are you sure you want to delete the blog post titled <strong>"{{ blog.title }}"</strong>? This action cannot be undone.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="button-group">
+            <button type="submit" class="btn btn-delete">Yes, Delete</button>
+            <a href="{% url 'blog_detail' blog.id %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+
+

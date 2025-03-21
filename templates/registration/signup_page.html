@@ -1,17 +1,14 @@
-{% extends "_base.html" %}
 {% load static %}
 
-
-{% block title %} sign up page{% endblock title %}
-
-
-{% block style %}
-    <!-- Link to the external CSS file -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Page</title>
     <link rel="stylesheet" href="{% static 'css/signup.css' %}">
-{% endblock style %}
-
-
-{% block content %}
+</head>
+<body>
     <div class="signup-container">
         <h1>Sign Up</h1>
         <!-- Display form errors at the top -->
@@ -45,7 +42,7 @@
             <label for="id_age">Age:</label>
             {{ form.age }}
 
-            <!-- Password fields (automatically included by UserCreationForm) -->
+            <!-- Password fields -->
             <label for="id_password1">Password:</label>
             {{ form.password1 }}
 
@@ -56,7 +53,8 @@
             <button type="submit">Sign Up</button>
         </form>
         <div class="login-link">
-            <p><a href="{% url 'login' %}">Log In</a>
+            <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
         </div>
     </div>
-{% endblock content %}
+</body>
+</html>

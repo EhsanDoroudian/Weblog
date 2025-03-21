@@ -139,8 +139,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # custom user
 AUTH_USER_MODEL = "accounts.CustomUserModel"  # new
 
-LOGIN_REDIRECT_URL = 'home'  
-LOGOUT_REDIRECT_URL = 'home'  
+LOGIN_REDIRECT_URL = 'blog_list'  
+LOGOUT_REDIRECT_URL = 'blog_list'  
 
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

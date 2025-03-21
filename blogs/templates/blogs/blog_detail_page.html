@@ -1,0 +1,82 @@
+{% extends "_base.html" %}
+
+{%load static%}
+
+{% block title %}Blog {{blog.id}}{% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/blog_detail.css' %}">
+{% endblock style %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Blog Post and Comments -->
+        <div class="col-lg-8">
+            <!-- Blog Post -->
+            <div class="card shadow my-3 p-5">
+                <h1 id="blog-title"></h1>
+                <p class="small text-muted mt-2">By: <span id="blog-author">{{blog.user}}</span></p>
+                <p class="mt-2" id="blog-description">{{blog.body}}</p>
+                <div>
+                <a href="{% url "blog_update" blog.id%}" type="submit" class="btn btn-info">Edit</a>
+                <a href="{% url "blog_delete" blog.id%}" type="submit" class="btn btn-warning">Delete</a>
+                </div>
+            </div>
+            <!-- Comments Section -->
+            <div class="card shadow my-3 p-5">
+                <h3>Comments:</h3>
+                <div id="comments-list">
+                    <!-- Comments will be dynamically added here -->
+                    <div class="comment">
+                        <p class="mb-1"><strong>John Doe</strong> <span class="text-muted small">(john@example.com)</span></p>
+                        <p class="mb-0">This is a great post! Thanks for sharing.</p>
+                    </div>
+                    <div class="comment">
+                        <p class="mb-1"><strong>Jane Smith</strong> <span class="text-muted small">(jane@example.com)</span></p>
+                        <p class="mb-0">I learned a lot from this. Keep it up!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Comment Form -->
+            <div class="card shadow my-3 p-5">
+                <h3>Add new comment:</h3>
+                <form id="comment-form">
+                    <div class="form-group py-2">
+                        <label class="py-1" for="author_name">Enter your name:</label>
+                        <input type="text" class="form-control" placeholder="e.g. John Doe" id="author_name" required>
+                    </div>
+                    <div class="form-group py-2">
+                        <label class="py-1" for="email">Your Email:</label>
+                        <input type="email" class="form-control" placeholder="example@gmail.com" id="email" required>
+                    </div>
+                    <div class="form-group py-2">
+                        <label class="py-1" for="comment_text">Comment text:</label>
+                        <textarea class="form-control" id="comment_text" rows="3" placeholder="Enter your comment text here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- About Section -->
+            <div class="card my-4 shadow-sm">
+                <h5 class="card-header">About</h5>
+                <div class="card-body">
+                    <p class="card-text">We love Python and Django. This blog is a place where we share our knowledge and experiences with the community.</p>
+                    <a href="#" class="btn btn-danger">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+
+
+

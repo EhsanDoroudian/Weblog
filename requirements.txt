@@ -1,0 +1,6 @@
+asgiref==3.8.1
+Django==5.1.6
+Faker==37.0.0
+sqlparse==0.5.3
+tqdm==4.67.1
+tzdata==2025.1
