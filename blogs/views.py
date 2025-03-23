@@ -6,6 +6,7 @@ from .forms import BlogForm
 from .decorators import user_is_authorized
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
 def blog_list_view(request):
     blogs_list = Blog.objects.filter(status='pub')
     paginator = Paginator(blogs_list, 7) 
