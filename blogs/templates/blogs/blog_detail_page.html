@@ -29,14 +29,12 @@
                 <h3>Comments:</h3>
                 <div id="comments-list">
                     <!-- Comments will be dynamically added here -->
+                     {% for comment in blog.comments.all %}
                     <div class="comment">
-                        <p class="mb-1"><strong>John Doe</strong> <span class="text-muted small">(john@example.com)</span></p>
-                        <p class="mb-0">This is a great post! Thanks for sharing.</p>
+                        <p class="mb-1"><strong>{{comment.user}}</strong> <span class="text-muted small">({{comment.user.email}})</span></p>
+                        <p class="mb-0">{{comment.text}}</p>
                     </div>
-                    <div class="comment">
-                        <p class="mb-1"><strong>Jane Smith</strong> <span class="text-muted small">(jane@example.com)</span></p>
-                        <p class="mb-0">I learned a lot from this. Keep it up!</p>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
