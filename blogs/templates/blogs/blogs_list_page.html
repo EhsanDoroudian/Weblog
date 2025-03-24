@@ -44,18 +44,18 @@
                             <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
                         </li>
                     {% endif %}
-            
+                    
                     {% for num in blogs.paginator.page_range %}
-                        {% if blogs.number == num %}
-                            <li class="page-item active">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
+                    {% if num == blogs.number %}
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% elif num > blogs.number|add:'-2' and num < blogs.number|add:'2' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
             
                     {% if blogs.has_next %}
                         <li class="page-item">

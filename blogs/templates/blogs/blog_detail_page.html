@@ -41,21 +41,15 @@
             <!-- Add Comment Form -->
             <div class="card shadow my-3 p-5">
                 <h3>Add new comment:</h3>
-                <form id="comment-form">
-                    <div class="form-group py-2">
-                        <label class="py-1" for="author_name">Enter your name:</label>
-                        <input type="text" class="form-control" placeholder="e.g. John Doe" id="author_name" required>
-                    </div>
-                    <div class="form-group py-2">
-                        <label class="py-1" for="email">Your Email:</label>
-                        <input type="email" class="form-control" placeholder="example@gmail.com" id="email" required>
-                    </div>
+
+                <form action={% url "blog_comment" blog.id%} method='post'>
+                    {% csrf_token %}
                     <div class="form-group py-2">
                         <label class="py-1" for="comment_text">Comment text:</label>
-                        <textarea class="form-control" id="comment_text" rows="3" placeholder="Enter your comment text here..." required></textarea>
+                        <textarea class="form-control" id="comment_text" name='text' rows="3" placeholder="Enter your comment text here..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+                </fomr>
             </div>
         </div>
 
