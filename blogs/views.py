@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-from .models import Blog
-from .forms import BlogForm
+from .models import Blog, Comment
+from .forms import BlogForm, CommentForm
 from .decorators import user_is_authorized
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -26,7 +26,23 @@ def blog_list_view(request):
 @login_required
 def blog_detail_view(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
-    return render(request, 'blogs/blog_detail_page.html', context={'blog': blog})
+    comment_form = CommentForm(request.POST)
+
+    return render(request, 'blogs/blog_detail_page.html', context={'blog': blog, 'comment_form': comment_form})
+
+
+@login_required
+def blog_comment_view(request, pk):
+    blog = get_object_or_404(Blog, pk=pk)
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        new_form = comment_form.save(commit=False)
+        new_form.blog = blog
+        new_form.user = request.user
+        new_form.save()
+        return redirect(blog.get_absolute_url())
+
+    return render(request, template_name='blogs/blog_detail_page.html',)
 
 
 @login_required

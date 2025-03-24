@@ -9,7 +9,7 @@ class Blog(models.Model):
         ('drf', 'draft'),
     )
     title = models.CharField(max_length=50)
-    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE, related_name='blogs')
     body = models.TextField()
     created_datetime = models.DateTimeField(auto_now_add=True)
     modfied_datetime = models.DateTimeField(auto_now=True)
@@ -22,4 +22,18 @@ class Blog(models.Model):
 
     def get_absolute_url(self):
         return reverse('blog_detail', args=[self.id])
+    
+
+
+class Comment(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    is_active = models.BooleanField(default=True)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    modfied_datetime = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return self.text
     
