@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from .models import Blog, Comment
+from .models import Blog
 from .forms import BlogForm, CommentForm
 from .decorators import user_is_authorized
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def blog_list_view(request):
-    blogs_list = Blog.objects.filter(status='pub')
+    blogs_list = Blog.objects.filter(status='pub').order_by('modfied_datetime')
     paginator = Paginator(blogs_list, 7) 
 
     page = request.GET.get('page')  # Get the current page number from the request
@@ -49,7 +49,7 @@ def blog_comment_view(request, pk):
 def blog_create_view(request):
     if request.method == 'POST':
         form = BlogForm(data=request.POST)
-        if form.is_valid:
+        if form.is_valid():
             new_form = form.save(commit=False)
             new_form.user = request.user
             new_form.save()
