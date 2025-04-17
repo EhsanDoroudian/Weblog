@@ -1,0 +1,9 @@
+{% load rest_framework %}
+
+<form class="form-inline" style="display: inline-block;">
+    {% for field in filter.form %}
+        {{ field.label }}
+        {{ field }}
+    {% endfor %}
+    <button class="btn btn-default" type="submit">Filter</button>
+</form>
