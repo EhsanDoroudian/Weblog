@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     #DRF
     'rest_framework',
     'django_filters',  # Required for filter forms
+    'drf_yasg',
 
 ]
 
