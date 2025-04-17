@@ -45,6 +45,10 @@ INSTALLED_APPS = [
     # local apps
     'accounts.apps.AccountsConfig',
     'blogs.apps.BlogsConfig',
+
+    #DRF
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
