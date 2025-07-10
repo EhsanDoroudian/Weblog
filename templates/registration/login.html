@@ -1,39 +1,54 @@
+{% extends "_base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-</head>
-<body>
+{% block title %}Login{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
     <div class="login-card">
-        <h1>Login</h1>
-        <!-- Display error messages -->
+        <h2 class="login-title"><i class="fas fa-sign-in-alt me-2"></i>Login</h2>
+        
         {% if form.errors %}
-            <div class="error-message">
-                Invalid username or password. Please try again.
-            </div>
+        <div class="alert alert-danger">
+            Invalid username or password. Please try again.
+        </div>
         {% endif %}
 
-        <form method="post">
+        <form method="POST" action={% url "login" %} class="login-form">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
+            
+            <div class="form-group">
+                <label for="username" class="form-label">
+                    <i class="fas fa-user me-2"></i>Username
+                </label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="fas fa-lock me-2"></i>Password
+                </label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            
+            <button type="submit" class="btn btn-primary btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+            
+            <div class="login-links">
+                <a href="{% url 'accounts:signup' %}" class="login-link">
+                    <i class="fas fa-user-plus me-1"></i>Create Account
+                </a>
+                <span class="link-separator">|</span>
+                <a href="{% url 'password_reset' %}" class="login-link">
+                    <i class="fas fa-key me-1"></i>Forgot Password?
+                </a>
+            </div>
         </form>
-        <div class="signup-link">
-            <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
-            <p>Forgot your password? <a href="{% url 'password_reset' %}">Reset your password</a></p>
-        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

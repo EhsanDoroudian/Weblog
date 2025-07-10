@@ -1,39 +1,63 @@
-/* General Styles */
+/* blogs_create.css */
+
+/* General Styles - Consistent with list page */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 20px 15px;
 }
 
-/* Card Styles */
+/* Main Content Row */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+/* Blog Post Form Column */
+.col-lg-8 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+}
+
+/* Card Styles - Matching list page */
 .card {
     border: none;
     border-radius: 10px;
+    overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    background: #fff;
+}
+
+.card.shadow.my-3.p-5 {
+    padding: 2rem !important;
 }
 
 .card:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.card-header {
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 10px 10px 0 0;
-    padding: 15px;
-    font-size: 1.25rem;
-    font-weight: bold;
-}
-
-.card-body {
-    padding: 20px;
+.card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
 }
 
 /* Form Styles */
@@ -44,9 +68,11 @@ body {
 .form-control {
     border-radius: 8px;
     border: 1px solid #ced4da;
-    padding: 10px 15px;
+    padding: 12px 15px;
     font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -57,7 +83,7 @@ body {
 
 textarea.form-control {
     resize: vertical;
-    min-height: 150px;
+    min-height: 200px;
 }
 
 label {
@@ -65,34 +91,30 @@ label {
     margin-bottom: 0.5rem;
     display: block;
     color: #495057;
+    font-size: 1rem;
 }
 
-/* Button Styles */
+/* Button Styles - Consistent with list page */
 .btn {
     border-radius: 8px;
     padding: 10px 20px;
     font-size: 1rem;
     font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
 }
 
 .btn-primary {
     background-color: #007bff;
-    border: none;
+    color: white;
 }
 
 .btn-primary:hover {
     background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border: none;
-}
-
-.btn-danger:hover {
-    background-color: #c82333;
     transform: translateY(-2px);
 }
 
@@ -103,30 +125,124 @@ label {
     margin-top: 0.5rem;
 }
 
-/* Sidebar Styles */
-.col-lg-4 .card {
-    margin-top: 2rem;
+/* Sidebar Column */
+.col-lg-4 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
 }
 
-.col-lg-4 .card-body {
-    background-color: #fff;
-    border-radius: 0 0 10px 10px;
+/* Sidebar Card */
+.sidebar-card {
+    margin-bottom: 30px;
 }
 
-.col-lg-4 .card-text {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.6;
+.sidebar-card .card-header {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
 }
 
-/* Responsive Styles */
+.sidebar-card .card-body {
+    padding: 20px;
+}
+
+.sidebar-card .card-text {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design - Enhanced */
 @media (max-width: 992px) {
-    .col-lg-8, .col-lg-4 {
+    .col-lg-8, 
+    .col-lg-4 {
         flex: 0 0 100%;
         max-width: 100%;
     }
-
+    
     .col-lg-4 {
-        margin-top: 2rem;
+        margin-top: 40px;
+    }
+    
+    .card.shadow.my-3.p-5 {
+        padding: 1.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+    
+    textarea.form-control {
+        min-height: 180px;
+    }
+    
+    label {
+        font-size: 0.95rem;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card.shadow.my-3.p-5 {
+        padding: 1.25rem !important;
+    }
+    
+    .card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-control {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    textarea.form-control {
+        min-height: 150px;
+    }
+    
+    label {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-card .card-header {
+        font-size: 1.1rem;
+        padding: 12px 15px;
     }
 }

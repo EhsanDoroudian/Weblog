@@ -1,87 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Python and Django blog with tips, tricks, and tutorials">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <title>{% block title %}{% endblock title %}</title>
+    <!-- Base CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-    <!-- Custom CSS -->
-    {% block style %} 
+    <!-- Page-specific CSS -->
+    {% block style %}{% endblock %}
+
+    <title>{% block title %}Python & Django Blog{% endblock %} | CodingYar</title>
+
+    <!-- Base inline styles -->
     <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+        }
+        
+        /* Ensure left-to-right layout */
+        body {
+            text-align: left !important;
+            direction: ltr !important;
+        }
     </style>
-    {% endblock style %}
-    
 </head>
-<body>
-
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="https://www.codingyar.com/">CodingYar.com</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link active" aria-current="page" href="{% url "blog_list" %}">Home</a>
-                <a class="nav-link" href="{% url "blog_create" %}">Create</a>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'blog_list' %}">
+                <i class="fas fa-code me-2"></i>CodingYar
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'blog_list' %}active{% endif %}" 
+                           href="{% url 'blog_list' %}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'blog_create' %}active{% endif %}" 
+                           href="{% url 'blog_create' %}">
+                            <i class="fas fa-plus-circle me-1"></i> Create
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3">
+                            <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+                        </span>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm me-2">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                        <a href="{% url 'accounts:signup' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-user-plus me-1"></i> Sign Up
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
-        {% if user.is_authenticated %}
-            <form method='post', action='{% url "logout" %}'>
-                {% csrf_token %}
-                <div class="mx-2 text-white">Welcome, {{user.username}}!
-                    <span> | </span>
-                    <button method='post' type='submit' class='btn btn-primary'>Log out</button>
-                </div>
-            </form>
-        {% else %}
-            <a href='{% url "login" %}' class="mx-2 text-white btn btn-primary">login</a>
-            <span>
-                |
-            </span>
-            <a href='{% url "accounts:signup" %}' class="mx-2 text-white btn btn-primary">SignUp</a>
-        {% endif %}
-    </div>
-</nav>
+    </nav>
 
-<!-- Header Section -->
-<header class="container-fluid bg-info py-5">
-    <div class="row">
-        <div class="col-md-8 col-10 mx-auto text-center">
+    <!-- Header -->
+    <header class="bg-info py-4">
+        <div class="container text-center">
             <h1 class="text-white">Welcome to Python and Django Blog</h1>
-            <p class="text-light">We share Python and Django tips, tricks, and tutorials here.</p>
+            <p class="lead text-light">We share Python and Django tips here.</p>
         </div>
-    </div>
-</header>
+    </header>
 
-<!-- Main Content -->
-{% block content %}{% endblock content %}
-<!-- Footer -->
-<footer class="footer text-center">
-    <div class="container">
-        <div class="mb-3">
-            <a href="https://www.linkedin.com/in/ehsan-doroudian-7842a3358/"><i class="fab fa-linkedin"></i></a>
-            <a href="https://github.com/EhsanDoroudian" class="text-decoration-none me-3"><i class="fab fa-github"></i></a>
+    <!-- Main Content -->
+    <main class="container my-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; {% now "Y" %} CodingYar</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="https://www.linkedin.com/in/ehsan-doroudian-7842a3358/" 
+                       class="text-white me-3" target="_blank">
+                        <i class="fab fa-linkedin fa-lg"></i>
+                    </a>
+                    <a href="https://github.com/EhsanDoroudian" class="text-white" target="_blank">
+                        <i class="fab fa-github fa-lg"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

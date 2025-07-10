@@ -3,9 +3,9 @@ from django.contrib.auth.models import AbstractUser
 
 
 class CustomUserModel(AbstractUser):
-    male = 'm'
-    female = 'f'
-    others = 'o'
+    male = 'M'
+    female = 'F'
+    others = 'O'
     GENDERS_CHOICES = {
         male: 'Male',
         female: 'Female',
