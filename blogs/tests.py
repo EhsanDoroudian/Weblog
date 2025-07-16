@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
+import datetime
 
-
-from blogs.models import Blog
+from blogs.models import Blog, Comment
 from blogs.forms import CommentForm
 from accounts.models import CustomUserModel
 
@@ -13,41 +14,84 @@ class TestBlog(TestCase):
     def setUpTestData(cls):
         cls.user1 = CustomUserModel.objects.create_user(
             username='user1',
-            email='email1',
-            age='100',
+            email='user1@gmail.com',
+            age='20',
             password='password1'
         )
 
         cls.user2 = CustomUserModel.objects.create_user(
             username='user2',
-            email='email2',
-            age='200',
+            email='user2@gmail.com',
+            age='30',
             password='password2'
         )
 
+        cls.admin = CustomUserModel.objects.create_superuser(
+            username='admin',
+            email='admin@gmail.com',
+            password='admin1234'
+        )
+
         cls.blog1 = Blog.objects.create(
-            title = 'title1',
+            title = 'Title1',
             user = cls.user1,
-            body = 'body1',
-            status = 'pub'
+            body = 'Body1',
+            status = 'pub',
+            modfied_datetime=timezone.now() - datetime.timedelta(days=1)
         )        
 
         cls.blog2 = Blog.objects.create(
-            title = 'title2',
+            title = 'Title2',
             user = cls.user2,
-            body = 'body2',
-            status = 'drf'
-        )        
+            body = 'Body2',
+            status = 'drf',
+            modfied_datetime=timezone.now()
+        )
+
+        cls.blog3 = Blog.objects.create(
+            title = 'Title3',
+            user = cls.user2,
+            body = 'Body3',
+            status = 'pub',
+            modfied_datetime=timezone.now()
+        ) 
+ 
+
+        cls.comment1 = Comment.objects.create(
+            blog=cls.blog1,
+            user=cls.user2,
+            text="Text1",
+            is_active=True,
+            created_datetime=timezone.now()
+        )
+
+        cls.comment2 = Comment.objects.create(
+            blog=cls.blog2,
+            user=cls.user1,
+            text="Text2",
+            is_active=False,
+            created_datetime=timezone.now()
+        )         
 
     def test_user_information(self):
         self.assertEqual(self.user1.username, 'user1')
-        self.assertEqual(self.user1.email, 'email1')
-        self.assertEqual(self.user1.age, '100')
+        self.assertEqual(self.user1.email, 'user1@gmail.com')
+        self.assertEqual(self.user1.age, '20')
 
         self.assertEqual(self.user2.username, 'user2')
-        self.assertEqual(self.user2.email, 'email2')
-        self.assertEqual(self.user2.age, '200')
+        self.assertEqual(self.user2.email, 'user2@gmail.com')
+        self.assertEqual(self.user2.age, '30')
 
+        self.assertEqual(self.comment1.blog, self.blog1)
+        self.assertEqual(self.comment1.user, self.user2)
+        self.assertEqual(self.comment1.text, "Text1")
+        self.assertEqual(self.comment1.is_active, True)
+        
+        self.assertEqual(self.comment2.blog, self.blog2)
+        self.assertEqual(self.comment2.user, self.user1)
+        self.assertEqual(self.comment2.text, "Text2")
+        self.assertEqual(self.comment2.is_active, False)
+        
 
 class TestBlogList(TestBlog):
 
@@ -67,9 +111,45 @@ class TestBlogList(TestBlog):
     
     def test_blog_list_view_content(self):
         response = self.client.get(reverse('blog_list'))
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.blog1)
         self.assertNotContains(response, self.blog2)
-
+        self.assertIn(self.blog1, response.context["blogs"])
+        self.assertNotIn(self.blog2, response.context["blogs"])
+    
+    def test_blog_list_empty(self):
+        Blog.objects.all().delete()
+        response = self.client.get(reverse("blog_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["blogs"]), 0)
+    
+    def test_blog_list_pagination(self):
+        for i in range(3, 21):
+            Blog.objects.create(
+                user=self.user1,
+                title=f"Title{i}",
+                body=f"Body{i}",
+                status='pub',
+                modfied_datetime=timezone.now()
+            )
+        response = self.client.get(reverse("blog_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["blogs"]), 7)
+        # Test second page
+        response = self.client.get(reverse("blog_list") + "?page=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["blogs"]), 7)
+        # Test third page
+        response = self.client.get(reverse("blog_list") + "?page=3")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["blogs"]), 6)
+    
+    def test_blog_list_ordering(self):
+        response = self.client.get(reverse("blog_list"))
+        blogs = response.context['blogs']
+        # Verify books are ordered by modified_datetime descending
+        self.assertEqual(blogs[0], self.blog1)  # Newer book first
+        self.assertEqual(blogs[1], self.blog3)  # Older book second
 
 class TestBlogDetail(TestBlog):
 

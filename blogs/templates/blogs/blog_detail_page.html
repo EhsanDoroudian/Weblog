@@ -30,10 +30,12 @@
                 <div id="comments-list">
                     <!-- Comments will be dynamically added here -->
                      {% for comment in blog.comments.all %}
-                    <div class="comment">
-                        <p class="mb-1"><strong>{{comment.user}}</strong> <span class="text-muted small">({{comment.user.email}})</span></p>
-                        <p class="mb-0">{{comment.text}}</p>
-                    </div>
+                        {% if comment.is_active %}
+                        <div class="comment">
+                            <p class="mb-1"><strong>{{comment.user}}</strong> <span class="text-muted small">({{comment.user.email}})</span></p>
+                            <p class="mb-0">{{comment.text}}</p>
+                        </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
