@@ -4,7 +4,7 @@ from django.utils import timezone
 import datetime
 
 from blogs.models import Blog, Comment
-from blogs.forms import CommentForm
+from blogs.forms import BlogForm, CommentForm
 from accounts.models import CustomUserModel
 
 
@@ -147,9 +147,9 @@ class TestBlogList(TestBlog):
     def test_blog_list_ordering(self):
         response = self.client.get(reverse("blog_list"))
         blogs = response.context['blogs']
-        # Verify books are ordered by modified_datetime descending
-        self.assertEqual(blogs[0], self.blog1)  # Newer book first
-        self.assertEqual(blogs[1], self.blog3)  # Older book second
+        # Verify blogs are ordered by modified_datetime descending
+        self.assertEqual(blogs[0], self.blog1)  # Newer blog first
+        self.assertEqual(blogs[1], self.blog3)  # Older blog second
 
 
 class TestBlogDetail(TestBlog):
@@ -249,13 +249,13 @@ class TestBlogCreate(TestBlog):
 
     def test_blog_create_post_unauthenticated(self):
         blog_data = {
-            'title': 'New Book',
+            'title': 'New Blog',
             'body': 'New Body',
         }
         response = self.client.post(reverse('blog_create'), data=blog_data)
         self.assertEqual(response.status_code, 302)  # Redirect to login
         self.assertRedirects(response, '/accounts/login/?next=/create/')
-        self.assertEqual(Blog.objects.all().count(), 3)  # No book created
+        self.assertEqual(Blog.objects.all().count(), 3)  # No blog created
 
 
 class TestBlogUpdate(TestBlog):
@@ -270,8 +270,54 @@ class TestBlogUpdate(TestBlog):
         response = self.client.get(reverse("blog_update", kwargs={"pk": self.blog1.id}))
         self.assertEqual(response.status_code, 200)
 
-    def test_book_update_template_used(self):
+    def test_blog_update_template_used(self):
         self.client.force_login(self.user1)
         response = self.client.get(reverse("blog_update", kwargs={"pk": self.blog1.id}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "blogs/blog_update_page.html")
+
+    def test_blog_update_context(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse("blog_update", kwargs={"pk": self.blog1.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["blog"], self.blog1)
+        self.assertIsInstance(response.context["form"], BlogForm)
+    
+    def test_blog_update_form_submission(self):
+        self.client.force_login(self.user1)
+        update_data = {
+            "title":"Updated Blog",
+            "body":"Updated Body",
+            "status":"drf",
+        }
+        url = reverse("blog_update", kwargs={"pk": self.blog1.id})
+        response = self.client.post((url), data=update_data)
+
+        if response.status_code != 302:
+            self.fail(f"Form submission failed: {response.context['form'].errors}")
+        
+        self.assertEqual(response.status_code, 302)  # Redirect after success
+        self.blog1.refresh_from_db()  # Refresh to get updated values
+        self.assertEqual(self.blog1.title, 'Updated Blog')
+        self.assertEqual(self.blog1.body, 'Updated Body')
+        self.assertEqual(self.blog1.status, 'drf')  # Adjust if status is not a field
+        self.assertEqual(self.blog1.user, self.user1)  # User should remain unchanged
+        self.assertRedirects(response, reverse('blog_detail', kwargs={'pk': self.blog1.id}))
+    
+    def test_blog_update_non_owner(self):
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse('blog_update', kwargs={'pk': self.blog1.id}))
+        self.assertEqual(response.status_code, 403)  # Forbidden for non-owner
+
+    def test_book_update_post_non_owner(self):
+        self.client.force_login(self.user2)
+        update_data = {
+            'title': 'Unauthorized Update',
+            'body': 'Unauthorized body',
+            'status': 'pub'
+        }
+        url = reverse("blog_update", kwargs={"pk": self.blog1.id})
+        response = self.client.post((url), data=update_data)
+        self.assertEqual(response.status_code, 403)  # Forbidden for non-owner
+        self.blog1.refresh_from_db()
+        self.assertEqual(self.blog1.title, 'Title1')  # Original title unchan
