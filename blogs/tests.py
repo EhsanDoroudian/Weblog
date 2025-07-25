@@ -260,10 +260,9 @@ class TestBlogCreate(TestBlog):
 
 class TestBlogUpdate(TestBlog):
 
-    def test_blog_update_url_auauthenticated(self):
+    def test_blog_update_url_unauthenticated(self):
         response = self.client.get(reverse("blog_update", kwargs={"pk": self.blog1.id}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, f'/accounts/login/?next=/update/{self.blog1.id}/')
+        self.assertEqual(response.status_code, 403)
 
     def test_blog_update_authenticated_owner(self):
         self.client.force_login(self.user1)
@@ -309,7 +308,7 @@ class TestBlogUpdate(TestBlog):
         response = self.client.get(reverse('blog_update', kwargs={'pk': self.blog1.id}))
         self.assertEqual(response.status_code, 403)  # Forbidden for non-owner
 
-    def test_book_update_post_non_owner(self):
+    def test_blog_update_post_non_owner(self):
         self.client.force_login(self.user2)
         update_data = {
             'title': 'Unauthorized Update',
@@ -321,3 +320,43 @@ class TestBlogUpdate(TestBlog):
         self.assertEqual(response.status_code, 403)  # Forbidden for non-owner
         self.blog1.refresh_from_db()
         self.assertEqual(self.blog1.title, 'Title1')  # Original title unchan
+
+    def test_blog_update_invalid_pk(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse('blog_update', kwargs={'pk': 999}))
+        self.assertEqual(response.status_code, 404)  # Non-existent blog
+
+
+class BlogDeleteTest(TestBlog):
+    
+    def test_blog_delete_url_unauthenticated(self):
+        response = self.client.get(reverse("blog_delete", kwargs={'pk': self.blog1.id}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_blog_delete_authenticated_owner(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse("blog_delete", kwargs={'pk': self.blog1.id}))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_blog_delete_template_used(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse("blog_delete", kwargs={'pk': self.blog1.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "blogs/blog_delete_page.html")
+
+    def test_blog_delete_form_submission(self):
+        self.client.force_login(self.user1)
+        response = self.client.post(reverse("blog_delete", kwargs={"pk": self.blog1.id}))
+        self.assertEqual(response.status_code, 302)  # Redirect after success
+        self.assertFalse(Blog.objects.filter(id=self.blog1.id).exists())  # Blog deleted
+        self.assertRedirects(response, reverse('blog_list'))  # Redirect to blogs list  
+    
+    def test_blog_delete_non_owner(self):
+        self.client.force_login(self.user2)
+        response = self.client.get(reverse('blog_delete', kwargs={'pk': self.blog1.id}))
+        self.assertEqual(response.status_code, 403)  # Forbidden for non-owner
+    
+    def test_blog_delete_invalid_pk(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse('blog_delete', kwargs={'pk': 999}))
+        self.assertEqual(response.status_code, 404)  # Non-existent blog

@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 
 from .models import Blog
 from .forms import BlogForm, CommentForm
@@ -61,10 +63,13 @@ def blog_create_view(request):
     return render(request, 'blogs/blog_create_page.html', context={'form': form})
 
 
-@login_required
 @user_is_authorized
+@login_required
 def blog_update_view(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+    try:
+        blog = Blog.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        raise Http404("Blog post not found") 
     if request.method == 'POST':
         form = BlogForm(data=None or request.POST, instance=blog)
         if form.is_valid():
@@ -78,8 +83,8 @@ def blog_update_view(request, pk):
     return render(request, 'blogs/blog_update_page.html', context={'form': form, 'blog': blog})
 
 
-@login_required
 @user_is_authorized
+@login_required
 def blog_delete_view(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
     
