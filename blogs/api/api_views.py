@@ -13,7 +13,7 @@ class BlogListCreateAPIView(generics.ListCreateAPIView):
     filterset_fields = ['status', 'user']
 
     def get_queryset(self):
-        queryset = Blog.objects.select_related('user')
+        queryset = Blog.objects.select_related('user').prefetch_related('comments__user')
         if not self.request.user.is_staff:
             queryset = queryset.filter(status='pub')
         return queryset
@@ -24,7 +24,7 @@ class BlogListCreateAPIView(generics.ListCreateAPIView):
 class BlogRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BlogSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    queryset = Blog.objects.select_related('user')
+    queryset = Blog.objects.select_related('user').prefetch_related('comments__user')
 
 class CommentListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer

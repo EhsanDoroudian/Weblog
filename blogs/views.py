@@ -10,7 +10,7 @@ from .decorators import user_is_authorized
 
 
 def blog_list_view(request):
-    blogs_list = Blog.objects.filter(status='pub').order_by('modfied_datetime')
+    blogs_list = Blog.objects.select_related('user').filter(status='pub').order_by('modfied_datetime')
     paginator = Paginator(blogs_list, 7) 
 
     page = request.GET.get('page')  # Get the current page number from the request
@@ -27,7 +27,12 @@ def blog_list_view(request):
 
 @login_required
 def blog_detail_view(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+    blog = get_object_or_404(
+        Blog.objects.select_related('user').prefetch_related(
+            'comments__user'
+        ), 
+        pk=pk
+    )
     comment_form = CommentForm(request.POST)
 
     return render(request, 'blogs/blog_detail_page.html', context={'blog': blog, 'comment_form': comment_form})
@@ -67,7 +72,7 @@ def blog_create_view(request):
 @login_required
 def blog_update_view(request, pk):
     try:
-        blog = Blog.objects.get(id=pk)
+        blog = Blog.objects.select_related('user').get(id=pk)
     except ObjectDoesNotExist:
         raise Http404("Blog post not found") 
     if request.method == 'POST':
@@ -86,7 +91,7 @@ def blog_update_view(request, pk):
 @user_is_authorized
 @login_required
 def blog_delete_view(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+    blog = get_object_or_404(Blog.objects.select_related('user'), pk=pk)
     
     if request.method == 'POST':
         blog.delete()

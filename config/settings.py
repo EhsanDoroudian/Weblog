@@ -20,10 +20,22 @@ SECRET_KEY = env.str('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DJANGO_DEBUG', default=True)  # Default to True for development
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'ehsandrn22.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'ehsandrn22.pythonanywhere.com']
 
 # Required for Django Debug Toolbar
-INTERNAL_IPS = ['127.0.0.1']  # Add your local IP here
+import socket
+def get_local_ip():
+    try:
+        # Get local IP address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except:
+        return '127.0.0.1'
+
+INTERNAL_IPS = ['127.0.0.1', 'localhost', '::1', get_local_ip()]
 
 # Detect if running tests
 TESTING = 'test' in sys.argv or 'PYTEST_VERSION' in os.environ
@@ -72,9 +84,13 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Keep for static files in production
 ]
 
+# Add CORS headers for Chrome compatibility
+if DEBUG:
+    MIDDLEWARE.append('django.middleware.common.CommonMiddleware')
+
 # Conditionally add debug toolbar middleware only when not testing
 if not TESTING:
-    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -145,8 +161,32 @@ LOGOUT_REDIRECT_URL = 'blog_list'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Optional: Force toolbar to show for debugging when not testing
+# Django Debug Toolbar Configuration
 if not TESTING:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,  # Only show when DEBUG is True
+        'SHOW_COLLAPSED': True,
+        'SHOW_TEMPLATE_CONTEXT': True,
+        'RENDER_PANELS': True,
+        'EXTRA_SIGNALS': [],
+        'HIDE_DJANGO_SQL': False,
+        'TAG': 'div',
+        'ENABLE_STACKTRACES': True,
     }
+    
+    # Configure Debug Toolbar Panels
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+    ]
