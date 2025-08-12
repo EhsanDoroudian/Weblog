@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.db.models import Count, Q
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 
 from .models import CustomUserModel
 from accounts.forms import CustomUserCreateForm, CustomUserChangeForm
@@ -14,29 +13,25 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     add_form = CustomUserCreateForm
     
-    # Enhanced list display
     list_display = [
         'username', 'email', 'full_name', 'age', 'gender', 
         'blog_count', 'comment_count', 'is_staff', 'is_active', 'date_joined'
     ]
     
-    # Enhanced list filters
     list_filter = [
         'is_staff', 'is_active', 'is_superuser', 'gender', 
         'date_joined', 'last_login', ('groups', admin.RelatedOnlyFieldListFilter)
     ]
     
-    # Enhanced search fields
     search_fields = ['username', 'email', 'first_name', 'last_name']
     
-    # Performance optimizations
-    list_per_page = 25
+    list_per_page = 10
     ordering = ('-date_joined',)
     
-    # Enhanced fieldsets
     fieldsets = (
         ('Personal Information', {
-            'fields': ('username', 'password', 'first_name', 'last_name', 'email')
+            'fields': ('username', 'password', 'first_name', 'last_name', 'email'),
+            'classes': ('wide',)
         }),
         ('Additional Information', {
             'fields': ('age', 'gender'),
@@ -52,19 +47,17 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
     
-    # Enhanced add fieldsets
     add_fieldsets = (
         ('Account Information', {
-            'classes': ('wide',),
             'fields': ('username', 'email', 'password1', 'password2'),
+            'classes': ('wide',),
         }),
         ('Personal Information', {
-            'classes': ('wide',),
             'fields': ('first_name', 'last_name', 'age', 'gender'),
+            'classes': ('wide',),
         }),
     )
     
-    # Enhanced actions
     actions = ['activate_users', 'deactivate_users', 'make_staff', 'remove_staff']
 
     def get_queryset(self, request):

@@ -4,10 +4,15 @@ from blogs.models import Blog, Comment
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Show username instead of ID
+    blog = serializers.StringRelatedField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'text', 'is_active', 'created_datetime']
+        fields = ['id', 'user', 'blog', 'text', 'is_active', 'created_datetime']
+    
+    def create(self, validated_data):
+        blog_id = self.context["blog_pk"]
+        return Comment.objects.create(blog_id=blog_id, **validated_data)
 
 class BlogSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Show username

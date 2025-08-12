@@ -1,12 +1,14 @@
 from django.urls import path
-from .api_views import (
-    BlogListCreateAPIView, BlogRetrieveUpdateDestroyAPIView,
-    CommentListCreateAPIView, CommentRetrieveUpdateDestroyAPIView
-)
+from . import api_views
+from rest_framework.routers import DefaultRouter
+from rest_framework_nested import routers
 
-urlpatterns = [
-    path('blogs/', BlogListCreateAPIView.as_view(), name='api-blog-list-create'),
-    path('blogs/<int:pk>/', BlogRetrieveUpdateDestroyAPIView.as_view(), name='api-blog-detail'),
-    path('comments/', CommentListCreateAPIView.as_view(), name='api-comment-list-create'),
-    path('comments/<int:pk>/', CommentRetrieveUpdateDestroyAPIView.as_view(), name='api-comment-detail'),
-]
+router = DefaultRouter()
+router.register('blogs', api_views.BlogViewSet, basename='blog')
+router.register('comments', api_views.CommentViewSet, basename='comment')
+
+
+blogs_router = routers.NestedDefaultRouter(parent_router=router, parent_prefix='blogs', lookup='blog')
+blogs_router.register('comments', api_views.CommentViewSet, basename='blog-comments')
+
+urlpatterns = router.urls + blogs_router.urls

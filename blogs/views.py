@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
+from django.db.models import Prefetch
 
-from .models import Blog
+from .models import Blog, Comment
 from .forms import BlogForm, CommentForm
 from .decorators import user_is_authorized
 
@@ -29,7 +30,7 @@ def blog_list_view(request):
 def blog_detail_view(request, pk):
     blog = get_object_or_404(
         Blog.objects.select_related('user').prefetch_related(
-            'comments__user'
+            Prefetch('comments', queryset=Comment.objects.select_related('user')),
         ), 
         pk=pk
     )

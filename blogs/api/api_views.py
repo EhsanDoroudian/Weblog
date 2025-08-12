@@ -1,58 +1,43 @@
 from rest_framework import generics, serializers
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Prefetch
 from blogs.models import Blog, Comment
 from .serializers import BlogSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
 
-class BlogListCreateAPIView(generics.ListCreateAPIView):
+
+
+class BlogViewSet(ModelViewSet):
     serializer_class = BlogSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['status', 'user']
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
+    search_fields = ['title', 'user']
+    ordering_fields = ['modfied_datetime', 'created_datetime']
+    filterset_fields = ['user', 'title', 'status']
 
     def get_queryset(self):
-        queryset = Blog.objects.select_related('user').prefetch_related('comments__user')
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(status='pub')
-        return queryset
-
+        return Blog.objects.select_related('user').prefetch_related(
+            Prefetch('comments', queryset=Comment.objects.select_related('user'))
+            )
+            
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class BlogRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = BlogSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    queryset = Blog.objects.select_related('user').prefetch_related('comments__user')
 
-class CommentListCreateAPIView(generics.ListCreateAPIView):
+class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        queryset = Comment.objects.filter(is_active=True).select_related('user', 'blog')
-        blog_id = self.request.query_params.get('blog')
-        if blog_id:
-            if not Blog.objects.filter(id=blog_id).exists():
-                raise serializers.ValidationError("Invalid blog_id.")
-            queryset = queryset.filter(blog_id=blog_id)
-        return queryset
+        blog_pk = self.kwargs['blog_pk']
+        return Comment.objects.select_related('user', 'blog').filter(blog_id=blog_pk).all()
+    
+    def get_serializer_context(self):
+        return {'blog_pk': self.kwargs["blog_pk"]}
 
     def perform_create(self, serializer):
-        blog_id = self.request.data.get('blog')
+        blog_id = self.kwargs["blog_pk"]
         blog = Blog.objects.filter(id=blog_id, status='pub').first()
-        if not blog:
-            raise serializers.ValidationError("Cannot comment on unpublished blogs.")
         serializer.save(user=self.request.user, blog=blog)
-
-class CommentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    queryset = Comment.objects.select_related('user', 'blog')
-
-    def destroy(self, request, *args, **kwargs):
-        comment = self.get_object()
-        comment.is_active = False  # Soft delete
-        comment.save()
-        return Response(status=204)

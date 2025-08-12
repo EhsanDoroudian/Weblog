@@ -84,9 +84,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Keep for static files in production
 ]
 
-# Add CORS headers for Chrome compatibility
-if DEBUG:
-    MIDDLEWARE.append('django.middleware.common.CommonMiddleware')
 
 # Conditionally add debug toolbar middleware only when not testing
 if not TESTING:
