@@ -1,14 +1,11 @@
-from rest_framework import generics, serializers
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Prefetch
 from blogs.models import Blog, Comment
 from .serializers import BlogSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
-
 
 
 class BlogViewSet(ModelViewSet):
@@ -26,6 +23,18 @@ class BlogViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def get_permissions(self):
+        """
+        Apply different permission classes based on the action:
+        - list/create: IsAuthenticatedOrReadOnly
+        - retrieve/update/destroy: IsAuthenticated and IsOwnerOrReadOnly
+        """
+        if self.action in ['list', 'create']:
+            permission_classes = [IsAuthenticatedOrReadOnly]
+        else:  # retrieve, update, partial_update, destroy
+            permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+        return [permission() for permission in permission_classes]
+
 
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
@@ -41,3 +50,15 @@ class CommentViewSet(ModelViewSet):
         blog_id = self.kwargs["blog_pk"]
         blog = Blog.objects.filter(id=blog_id, status='pub').first()
         serializer.save(user=self.request.user, blog=blog)
+
+    def get_permissions(self):
+        """
+        Apply different permission classes based on the action:
+        - list/create: IsAuthenticatedOrReadOnly
+        - retrieve/update/destroy: IsAuthenticated and IsOwnerOrReadOnly
+        """
+        if self.action in ['list', 'create']:
+            permission_classes = [IsAuthenticatedOrReadOnly]
+        else:  # retrieve, update, partial_update, destroy
+            permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+        return [permission() for permission in permission_classes]
