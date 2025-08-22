@@ -12,7 +12,7 @@ class BlogViewSet(ModelViewSet):
     serializer_class = BlogSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
     search_fields = ['title', 'user']
-    ordering_fields = ['modfied_datetime', 'created_datetime']
+    ordering_fields = ['modified_datetime', 'created_datetime']
     filterset_fields = ['user', 'title', 'status']
 
     def get_queryset(self):

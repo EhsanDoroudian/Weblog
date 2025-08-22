@@ -37,7 +37,7 @@ class TestBlog(TestCase):
             user = cls.user1,
             body = 'Body1',
             status = 'pub',
-            modfied_datetime=timezone.now() - datetime.timedelta(days=1)
+            modified_datetime=timezone.now() - datetime.timedelta(days=1)
         )        
 
         cls.blog2 = Blog.objects.create(
@@ -45,7 +45,7 @@ class TestBlog(TestCase):
             user = cls.user2,
             body = 'Body2',
             status = 'drf',
-            modfied_datetime=timezone.now()
+            modified_datetime=timezone.now()
         )
 
         cls.blog3 = Blog.objects.create(
@@ -53,8 +53,8 @@ class TestBlog(TestCase):
             user = cls.user2,
             body = 'Body3',
             status = 'pub',
-            modfied_datetime=timezone.now()
-        ) 
+            modified_datetime=timezone.now()
+            ) 
  
 
         cls.comment1 = Comment.objects.create(
@@ -130,7 +130,7 @@ class TestBlogList(TestBlog):
                 title=f"Title{i}",
                 body=f"Body{i}",
                 status='pub',
-                modfied_datetime=timezone.now()
+                modified_datetime=timezone.now()
             )
         response = self.client.get(reverse("blog_list"))
         self.assertEqual(response.status_code, 200)

@@ -7,13 +7,13 @@ from .models import Blog, Comment
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
-    list_display = ['title', 'username', 'status', 'created_datetime', 'modfied_datetime', 'comment_count_display', 'body_preview']
-    list_filter = ['status', 'created_datetime', 'modfied_datetime']
+    list_display = ['title', 'username', 'status', 'created_datetime', 'modified_datetime', 'comment_count_display', 'body_preview']
+    list_filter = ['status', 'created_datetime', 'modified_datetime']
     search_fields = ['title',]
     date_hierarchy = 'created_datetime'
-    ordering = ('-modfied_datetime',)
+    ordering = ('-modified_datetime',)
     list_per_page = 20
-    readonly_fields = ['created_datetime', 'modfied_datetime', 'comment_count_display']
+    readonly_fields = ['created_datetime', 'modified_datetime', 'comment_count_display']
     list_editable = ['status']
     prepopulated_fields = {'title': ('title',)}
     actions = ['mark_as_published', 'mark_as_draft', 'delete_selected_blogs']
@@ -26,7 +26,7 @@ class BlogAdmin(admin.ModelAdmin):
             'fields': ('title', 'body', 'status', 'user')
         }),
         ('Timestamps', {
-            'fields': ('created_datetime', 'modfied_datetime'),
+            'fields': ('created_datetime', 'modified_datetime'),
             'classes': ('collapse',)
         }),
         ('Statistics', {
@@ -103,13 +103,13 @@ class BlogAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['text_preview', 'user', 'blog_title', 'is_active', 'created_datetime', 'modfied_datetime']
+    list_display = ['text_preview', 'user', 'blog_title', 'is_active', 'created_datetime', 'modified_datetime']
     list_filter = ['is_active', 'created_datetime', 'user', 'blog__status']
     search_fields = ['text', 'user__username', 'user__email', 'blog__title']
     date_hierarchy = 'created_datetime'
-    ordering = ('-modfied_datetime',)
+    ordering = ('-modified_datetime',)
     list_per_page = 20
-    readonly_fields = ['created_datetime', 'modfied_datetime']
+    readonly_fields = ['created_datetime', 'modified_datetime']
     list_editable = ['is_active']
     actions = ['activate_comments', 'deactivate_comments', 'delete_selected_comments']
     autocomplete_fields = ['blog',]
@@ -125,7 +125,7 @@ class CommentAdmin(admin.ModelAdmin):
             'fields': ('is_active',)
         }),
         ('Timestamps', {
-            'fields': ('created_datetime', 'modfied_datetime'),
+            'fields': ('created_datetime', 'modified_datetime'),
             'classes': ('collapse',)
         }),
     )

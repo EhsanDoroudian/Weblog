@@ -11,7 +11,7 @@ from .decorators import user_is_authorized
 
 
 def blog_list_view(request):
-    blogs_list = Blog.objects.select_related('user').filter(status='pub').order_by('modfied_datetime')
+    blogs_list = Blog.objects.select_related('user').filter(status='pub').order_by('modified_datetime')
     paginator = Paginator(blogs_list, 7) 
 
     page = request.GET.get('page')  # Get the current page number from the request

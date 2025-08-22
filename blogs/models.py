@@ -12,7 +12,7 @@ class Blog(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE, related_name='blogs')
     body = models.TextField()
     created_datetime = models.DateTimeField(auto_now_add=True)
-    modfied_datetime = models.DateTimeField(auto_now=True)
+    modified_datetime = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=3)
 
 
@@ -31,7 +31,7 @@ class Comment(models.Model):
     text = models.TextField()
     is_active = models.BooleanField(default=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
-    modfied_datetime = models.DateTimeField(auto_now=True)
+    modified_datetime = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):

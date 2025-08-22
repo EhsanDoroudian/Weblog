@@ -22,5 +22,5 @@ class BlogSerializer(serializers.ModelSerializer):
         model = Blog
         fields = [
             'id', 'title', 'user', 'body', 'status', 
-            'created_datetime', 'modfied_datetime', 'comments'
+            'created_datetime', 'modified_datetime', 'comments'
         ]

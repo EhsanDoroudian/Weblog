@@ -5,8 +5,6 @@ from rest_framework_nested import routers
 
 router = DefaultRouter()
 router.register('blogs', api_views.BlogViewSet, basename='blog')
-router.register('comments', api_views.CommentViewSet, basename='comment')
-
 
 blogs_router = routers.NestedDefaultRouter(parent_router=router, parent_prefix='blogs', lookup='blog')
 blogs_router.register('comments', api_views.CommentViewSet, basename='blog-comments')
